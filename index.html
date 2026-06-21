@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday!</title>
+  <style>
+    :root {
+      --bg1: #ff416c;
+      --bg2: #6a11cb;
+      --accent: #ff4d6d;
+      --card-bg: rgba(255, 255, 255, 0.15);
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+      color: #fff;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .card {
+      width: min(680px, 100%);
+      background: var(--card-bg);
+      padding: clamp(18px, 4vw, 40px);
+      border-radius: var(--radius);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      font-size: clamp(2rem, 6vw, 3rem);
+      margin: 10px 0 12px;
+      line-height: 1.1;
+    }
+
+    p {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .emoji {
+      font-size: clamp(2rem, 6vw, 2.6rem);
+      animation: bounce 1s infinite alternate;
+      user-select: none;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 22px;
+      border: none;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #ffffff;
+      color: var(--accent);
+      font-weight: bold;
+      transition: transform 0.08s ease, filter 0.2s ease;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    button.secondary {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 250ms ease-out;
+    }
+    .page.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .surprise-image {
+      width: min(380px, 100%);
+      margin: 18px auto 10px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      position: relative;
+      isolation: isolate;
+    }
+    .surprise-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transform: translateZ(0);
+    }
+
+    /* Liquid-glass overlay */
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: auto; /* must be visible/clickable */
+      z-index: 5;
+    }
+
+    .liquid-layer {
+      position: absolute;
+      inset: -40%;
+      opacity: 0;
+      transform: translate3d(0, 0, 0) rotate(0deg);
+      transition: opacity 220ms ease;
+      background:
+        radial-gradient(closest-side, rgba(255,255,255,0.18), rgba(255,255,255,0) 60%),
+        conic-gradient(from 120deg,
+          rgba(255,255,255,0) 0deg,
+          rgba(255,255,255,0.28) 55deg,
+          rgba(255,255,255,0) 110deg,
+          rgba(255,255,255,0.18) 165deg,
+          rgba(255,255,255,0) 220deg,
+          rgba(255,255,255,0.26) 275deg,
+          rgba(255,255,255,0) 360deg
+        );
+      filter: blur(18px) saturate(140%) contrast(120%);
+      mix-blend-mode: screen;
+      z-index: 1; /* always behind buttons */
+    }
+
+    .liquid-layer::before,
+    .liquid-layer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          120deg,
+          rgba(255,255,255,0) 0px,
+          rgba(255,255,255,0.18) 14px,
+          rgba(255,255,255,0) 28px
+        );
+      opacity: 0.55;
+      transform: translateX(-20%) rotate(-8deg);
+      filter: blur(2px);
+      animation: liquidScan 2.1s linear infinite;
+    }
+
+    .liquid-layer::after {
+      opacity: 0.35;
+      animation-duration: 3.2s;
+      transform: translateX(20%) rotate(9deg);
+    }
+
+    @keyframes liquidScan {
+      0% { transform: translateX(-30%) translateY(-10%) rotate(-8deg); }
+      50% { transform: translateX(10%) translateY(12%) rotate(-6deg); }
+      100% { transform: translateX(40%) translateY(-4%) rotate(-8deg); }
+    }
+
+    .photo-liquid-btnwrap {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      pointer-events: auto; /* re-enable click */
+      z-index: 3;
+    }
+
+    .liquid-glass-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      
+    }
+
+    .liquid-glass-panel span {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.96);
+      text-shadow: 0 6px 16px rgba(0,0,0,0.25);
+      user-select: none;
+    }
+
+    button.photo-btn {
+      /* keep the “liquid control” compact (icon bigger, not full pill bigger) */
+      width: 46px;
+      height: 46px;
+      padding: 0;
+      font-size: 0px;
+      background: rgba(0, 0, 0, 66%);
+      color: #ff2f55;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.22);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Liquid shimmer border/glow */
+    button.photo-btn::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        conic-gradient(from 180deg,
+          rgba(255,255,255,0) 0deg,
+          rgba(255,255,255,0.55) 60deg,
+          rgba(255,255,255,0) 120deg,
+          rgba(255,255,255,0.35) 190deg,
+          rgba(255,255,255,0) 260deg,
+          rgba(255,255,255,0.45) 320deg,
+          rgba(255,255,255,0) 360deg);
+      opacity: 0.0;
+      transition: opacity 220ms ease;
+      filter: blur(10px);
+      z-index: 0;
+    }
+
+    button.photo-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg,
+          rgba(255,255,255,0) 0%,
+          rgba(255,255,255,0.35) 25%,
+          rgba(255,255,255,0) 55%);
+      transform: translateX(-120%);
+      opacity: 0.0;
+      transition: opacity 220ms ease;
+      z-index: 0;
+    }
+
+    /* Liquid-glass icons inside the toggle button */
+    .liquid-icon {
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      user-select: none;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,0.25));
+    }
+
+    .liquid-icon svg {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    .liquid-icon .stroke {
+      /* remove icon outline */
+      stroke: none;
+      stroke-width: 0;
+      fill: none;
+      opacity: 0;
+    }
+
+    .liquid-icon .glassFill {
+      fill: url(#glassGrad);
+      opacity: 0.95;
+    }
+
+    /* When liquid effect is ON, animate the button shimmer */
+    .surprise-image.photo-liquid-on button.photo-btn::before {
+      opacity: 0.9;
+      animation: btnLiquidGlow 1.6s ease-in-out infinite;
+    }
+
+    .surprise-image.photo-liquid-on button.photo-btn::after {
+      opacity: 0.9;
+      animation: btnLiquidSweep 1.4s ease-in-out infinite;
+    }
+
+    @keyframes btnLiquidGlow {
+      0%,100% { filter: blur(10px); transform: scale(1); }
+      50% { filter: blur(14px); transform: scale(1.03); }
+    }
+
+    @keyframes btnLiquidSweep {
+      0% { transform: translateX(-120%); }
+      50% { transform: translateX(20%); }
+      100% { transform: translateX(120%); }
+    }
+
+    /* Ensure icon/text is above shimmer layers */
+    button.photo-btn > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    button.photo-btn.secondary {
+      background: rgba(255, 255, 255, 0.10);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    /* Enable effect */
+    .surprise-image.photo-liquid-on .liquid-layer {
+      opacity: 1;
+      animation: liquidFloat 1.7s ease-in-out infinite;
+    }
+
+    @keyframes liquidFloat {
+      0%, 100% { transform: translate3d(-2%, 1%, 0) rotate(-2deg); }
+      50% { transform: translate3d(2%, -1%, 0) rotate(2deg); }
+    }
+
+    /* Small “wobble” distortion on the image itself */
+    .surprise-image.photo-liquid-on img {
+      animation: liquidWobble 900ms ease-in-out infinite;
+      filter: saturate(1.08) contrast(1.05);
+    }
+
+    @keyframes liquidWobble {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.01) translateY(-1px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .surprise-image.photo-liquid-on img { animation: none; }
+      .surprise-image.photo-liquid-on .liquid-layer { animation: none; }
+      .liquid-layer::before,
+      .liquid-layer::after { animation: none; }
+    }
+
+    .subtle { opacity: 0.95; }
+
+    /* Page 3: Carousel (4 premium cards) */
+    #page-msg {
+      padding: 6px 0 0;
+    }
+
+    #page-msg .emoji {
+      font-size: 2rem;
+      margin-bottom: 6px;
+      animation: bounce 1s infinite alternate;
+    }
+
+    #page-msg .carousel {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      margin: 8px auto 0;
+      position: relative;
+    }
+
+    #page-msg .carousel-card {
+      display: none;
+      background: linear-gradient(135deg, rgba(255,75,110,0.95), rgba(255,123,84,0.95));
+      color: #fff;
+      border-radius: 24px;
+      padding: 26px 22px;
+      min-height: 260px;
+      box-shadow: 0 15px 35px rgba(0,0,0,.25);
+      animation: fade .4s ease;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.20);
+      backdrop-filter: blur(8px);
+    }
+
+    #page-msg .carousel-card.active {
+      display: block;
+    }
+
+    #page-msg .carousel-card::before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 50%;
+      top: -130px;
+      right: -90px;
+    }
+
+    #page-msg .carousel-card::after {
+      content: "";
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      bottom: -90px;
+      left: -70px;
+    }
+
+    #page-msg .carousel-photo{
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+
+      /* “premium” circle */
+      border: 2px solid rgba(255,255,255,0.28);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25);
+
+      display: block;
+      margin: 6px auto 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    #page-msg .carousel-title {
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+
+    #page-msg .carousel-text {
+      position: relative;
+      z-index: 1;
+      line-height: 1.8;
+      font-size: 15px;
+      margin: 0;
+      padding: 0 4px;
+    }
+
+    #page-msg .carousel-footer {
+      position: absolute;
+      bottom: 18px;
+      right: 22px;
+      font-weight: bold;
+      font-size: 15px;
+      z-index: 1;
+      text-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    #page-msg .carousel-buttons {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #page-msg .carousel-btn {
+      border: none;
+      background: #fff;
+      color: #ff4b6e;
+      padding: 12px 18px;
+      border-radius: 30px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    #page-msg .carousel-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.02);
+    }
+
+    #page-msg .carousel-dots {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    #page-msg .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      transition: transform .12s ease, background .12s ease, width .12s ease;
+    }
+
+    #page-msg .dot.active {
+      background: rgba(255,255,255,0.95);
+      transform: scale(1.1);
+    }
+
+    #page-msg .carousel-card:nth-child(1) { background: linear-gradient(135deg,#ff416c,#ff4b2b); }
+    #page-msg .carousel-card:nth-child(2) { background: linear-gradient(135deg,#6a11cb,#2575fc); }
+    #page-msg .carousel-card:nth-child(3) { background: linear-gradient(135deg,#11998e,#38ef7d); }
+    #page-msg .carousel-card:nth-child(4) { background: linear-gradient(135deg,#ee0979,#ff6a00); }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .emoji { animation: none; }
+      .page { animation: none; }
+      #page-msg .carousel-card { animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card" aria-live="polite">
+    <!-- Page 1 -->
+    <section id="page-home" class="page active">
+      <div class="emoji">🎉🎂🎈</div>
+      <h1>Happy Birthday Kajju!</h1>
+      <p class="subtle">
+        Wishing you a day filled with happiness, laughter, and unforgettable moments.
+        May all your dreams come true and the year ahead bring you endless joy!
+      </p>
+
+      <div class="actions">
+        <button id="btn-surprise" type="button">Open Your Surprise</button>
+      </div>
+    </section>
+
+    <!-- Page 2 -->
+    <section id="page-surprise" class="page">
+      <div class="emoji">✨🎁✨</div>
+      <h1>Best Wishes!</h1>
+      <p class="subtle" id="surprise-message">
+        You made it to another amazing year. Keep shining and have the best day ever! 🥳
+        Kajju Click on the play button below to enjoy your birthday surprise with music and a special effect!
+      </p>
+
+      <div class="surprise-image photo-liquid-off" role="img" aria-label="Birthday celebration picture">
+        <img id="surprise-picture" alt="Birthday celebration" />
+        <div class="photo-overlay" aria-hidden="true">
+          <div class="liquid-layer"></div>
+
+          <div class="photo-liquid-btnwrap">
+            <div class="liquid-glass-panel">
+              <div class="actions" style="margin-top:0; gap:8px;">
+                <button id="btn-photo-toggle" type="button" class="photo-btn" aria-label="Toggle liquid effect">▶️</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spotify player (embed requires no Spotify Developer credentials) -->
+      <div style="width: min(560px, 100%); margin: 14px auto 0;">
+        
+      </div>
+
+      <div class="actions">
+        <button id="btn-back" type="button" class="secondary">Back</button>
+        <button id="btn-replay" type="button">Kajju let's go ahead </button>
+      </div>
+    </section>
+
+    <!-- Page 3 -->
+    <section id="page-msg" class="page">
+      <div class="emoji">💖✨</div>
+      <h1>Birthday Wishes!</h1>
+
+      <div class="carousel" id="wish-carousel">
+        <!-- Card 1 -->
+        <div class="carousel-card active">
+
+          <img
+            class="carousel-photo"
+            src="IMG_E1679.JPG"
+            alt="Birthday photo"
+          />
+
+          <h2 class="carousel-title">🎉 Happy Birthday Mera Chota kajju❤️</h2>
+          
+          <div class="carousel-footer">1 / 5</div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="carousel-card">
+          
+
+          <img
+            class="carousel-photo"
+            src="2026_03_10_10_38_IMG_0681.JPG"
+            alt="Birthday photo"
+          />
+
+          <h2 class="carousel-title">🌸 First Meeting</h2>
+          <p class="carousel-text">
+            I don’t know if you realize this, but the day I first saw you became one of the most special memories of my life. I kept looking for excuses to start a conversation with you, but I never had the courage. I’m grateful that one day you took the first step and talked to me.
+          </p>
+          <div class="carousel-footer">2 / 5</div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="carousel-card">
+      
+
+          <img
+            class="carousel-photo"
+            src="2026_04_27_19_58_IMG_0843.JPG"
+            alt="Birthday photo"
+          />
+
+          <h2 class="carousel-title">😊 Beautiful Moments</h2>
+          <p class="carousel-text">
+            we spent so much time together—texting, calling, laughing, and sharing little moments that meant more to me than you probably know. I even remember the times we hugged, and those moments made me feel happy, comfortable, and incredibly lucky to have you in my life.
+          </p>
+          <div class="carousel-footer">3 / 5</div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="carousel-card">
+          
+
+          <img
+            class="carousel-photo"
+            src="IMG_0672.JPG"
+            alt="Birthday photo"
+          />
+
+          <h2 class="carousel-title">❤️ From My Heart</h2>
+          <p class="carousel-text">
+            And just so you know, even if life changes you, even if you gain weight or look different over time, you’ll always be the same beautiful girl to me. What made you special was never just your appearance—it was your smile, your personality, and the way you made ordinary moments feel unforgettable. 🎂
+          </p>
+          <div class="carousel-footer">4 / 5</div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="carousel-card">
+          
+
+          <img
+            class="carousel-photo"
+            src="2026_05_02_13_05_IMG_0874.PNG"
+            alt="Birthday photo"
+          />
+
+          <h2 class="carousel-title">🌟 Always Shining</h2>
+          <p class="carousel-text">
+            Even though we’re not as close as we used to be, I genuinely wish you nothing but happiness, success, good health, and peace. I hope this birthday brings you everything you’ve been hoping for and that life always gives you reasons to smile. 💖
+          </p>
+          <div class="carousel-footer">5 / 5</div>
+        </div>
+
+        <!-- Controls -->
+        <div class="carousel-buttons">
+          <button class="carousel-btn" id="btn-prev-msg" type="button">⬅</button>
+          <button class="carousel-btn" id="btn-next-msg" type="button">➡</button>
+        </div>
+
+        <!-- Dots -->
+        <div class="carousel-dots" aria-label="Birthday wishes carousel">
+          <span class="dot active" data-dot="0"></span>
+          <span class="dot" data-dot="1"></span>
+          <span class="dot" data-dot="2"></span>
+          <span class="dot" data-dot="3"></span>
+          <span class="dot" data-dot="4"></span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btn-back-from-msg" type="button" class="secondary">Back</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Background music (autoplay is blocked until user interaction) -->
+  <!-- To add real music:
+       1) Put an MP3 next to this file (e.g. birthday.mp3)
+       2) Replace src="" below with src="birthday.mp3"
+  -->
+  <audio id="bg-audio" preload="auto" loop>
+    <source id="bg-audio-source" src="Chand Mera Dil.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const btnSurprise = document.getElementById('btn-surprise');
+    const btnBack = document.getElementById('btn-back');
+    const btnReplay = document.getElementById('btn-replay');
+
+    const pageHome = document.getElementById('page-home');
+    const pageSurprise = document.getElementById('page-surprise');
+    const pageMsg = document.getElementById('page-msg');
+
+    const audio = document.getElementById('bg-audio');
+    const surprisePicture = document.getElementById('surprise-picture');
+
+    const btnPhotoToggle = document.getElementById('btn-photo-toggle');
+    const surpriseImageWrap = surprisePicture?.closest('.surprise-image');
+
+    let liquidRunning = false;
+
+    function setLiquidRunning(next) {
+      liquidRunning = next;
+
+      if (!surpriseImageWrap) return;
+
+      // Toggle Liquid-Glass visuals
+      surpriseImageWrap.classList.toggle('photo-liquid-on', liquidRunning);
+      surpriseImageWrap.classList.toggle('photo-liquid-off', !liquidRunning);
+
+      // Toggle MP3 playback with the same button
+      try {
+        if (audio) {
+          if (liquidRunning) {
+            // Resume from where it was paused
+            const p = audio.play();
+            if (p && typeof p.then === 'function') p.catch(() => {});
+          } else {
+            audio.pause();
+          }
+        }
+      } catch (e) {
+        // Autoplay/play might be blocked; keep fail silent.
+      }
+
+      // Update icon
+      if (btnPhotoToggle) {
+        const playSvg = `
+          <span class="liquid-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <defs>
+                <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="rgba(255,255,255,0.95)"/>
+                  <stop offset="1" stop-color="rgba(255,255,255,0.20)"/>
+                </linearGradient>
+              </defs>
+              <path class="stroke" d="M10 10 Q10 6 14 6 H34 Q38 6 38 10 V38 Q38 42 34 42 H14 Q10 42 10 38 Z" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.95)" stroke-width="2" />
+              <path d="M20 16 L32 24 L20 32 Z" fill="url(#glassGrad)" opacity="0.95"/>
+            </svg>
+          </span>
+        `;
+
+        const pauseSvg = `
+          <span class="liquid-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <defs>
+                <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="rgba(255,255,255,0.95)"/>
+                  <stop offset="1" stop-color="rgba(255,255,255,0.20)"/>
+                </linearGradient>
+              </defs>
+              <path class="stroke" d="M10 10 Q10 6 14 6 H34 Q38 6 38 10 V38 Q38 42 34 42 H14 Q10 42 10 38 Z" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.95)" stroke-width="2" />
+              <rect x="20" y="16" width="5" height="16" rx="1.5" fill="url(#glassGrad)" opacity="0.95"/>
+              <rect x="27" y="16" width="5" height="16" rx="1.5" fill="url(#glassGrad)" opacity="0.95"/>
+            </svg>
+          </span>
+        `;
+
+        btnPhotoToggle.innerHTML = liquidRunning ? pauseSvg : playSvg;
+        btnPhotoToggle.setAttribute(
+          'aria-label',
+          liquidRunning ? 'Pause liquid effect and music' : 'Play liquid effect and music'
+        );
+      }
+    }
+
+    // start with effect OFF
+    setLiquidRunning(false);
+
+    if (btnPhotoToggle) {
+      btnPhotoToggle.addEventListener('click', () => setLiquidRunning(!liquidRunning));
+    }
+
+    function showSurprisePage() {
+      pageHome.classList.remove('active');
+      pageSurprise.classList.add('active');
+    }
+
+    function showHomePage() {
+      pageSurprise.classList.remove('active');
+      pageHome.classList.add('active');
+    }
+
+    async function startMusic() {
+      try {
+        audio.currentTime = 0;
+        const p = audio.play();
+        if (p && typeof p.then === 'function') await p;
+      } catch (e) {
+        // Autoplay blocked or missing audio source; fail silently.
+      }
+    }
+
+    // Inline SVG "picture" (no extra files needed).
+    const surpriseSvg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ff9a9e"/>
+            <stop offset="1" stop-color="#fad0c4"/>
+          </linearGradient>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="10" stdDeviation="15" flood-color="#000" flood-opacity="0.25"/>
+          </filter>
+        </defs>
+
+        <rect width="900" height="600" rx="32" fill="url(#g)"/>
+        <g filter="url(#shadow)">
+          <circle cx="740" cy="150" r="70" fill="rgba(255,255,255,0.28)"/>
+          <circle cx="200" cy="420" r="110" fill="rgba(255,255,255,0.22)"/>
+        </g>
+
+        <g font-family="Arial, sans-serif" text-anchor="middle">
+          <text x="450" y="200" font-size="64" fill="#ffffff" font-weight="800">HAPPY BIRTHDAY</text>
+          <text x="450" y="265" font-size="26" fill="rgba(255,255,255,0.92)">Surprise unlocked ✨</text>
+        </g>
+
+        <!-- Confetti -->
+        <g>
+          ${Array.from({ length: 90 }).map((_, i) => {
+            const x = (i * 53) % 900;
+            const y = 110 + ((i * 77) % 420);
+            const r = 3 + ((i * 17) % 7);
+            const colors = ['#ffffff', '#ffe66d', '#ff9a9e', '#8ec5ff', '#c9f7d6', '#fad0c4', '#ff9fcb'];
+            const c = colors[i % colors.length];
+            const o = 0.75 + ((i % 6) * 0.04);
+            return `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" opacity="${o}" />`;
+          }).join('')}
+        </g>
+      </svg>
+    `;
+
+    const svgDataUri =
+      'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(surpriseSvg.trim());
+
+    // Use your JPG file instead of the inline SVG:
+    surprisePicture.src = '2026_03_10_10_38_IMG_0681.JPG';
+
+    // If you ever want to switch back to the SVG, comment out the line above and uncomment below:
+    // surprisePicture.src = svgDataUri;
+
+    btnSurprise.addEventListener('click', async () => {
+      showSurprisePage();
+      // Do not autoplay music; user will start via the liquid play button.
+    });
+
+    function goToPage3() {
+      pageSurprise.classList.remove('active');
+      pageHome.classList.remove('active');
+      pageMsg.classList.add('active');
+
+      setLiquidRunning(false);
+      try { audio?.pause(); } catch (e) {}
+    }
+
+    function goToPage2() {
+      pageMsg?.classList.remove('active');
+      pageHome.classList.remove('active');
+      pageSurprise.classList.add('active');
+    }
+
+    btnBack.addEventListener('click', () => {
+      showHomePage();
+    });
+
+    btnReplay.addEventListener('click', async () => {
+      // Go to the next page (birthday message section)
+      goToPage3();
+    });
+
+    const btnBackFromMsg = document.getElementById('btn-back-from-msg');
+    btnBackFromMsg?.addEventListener('click', () => {
+      // Back button on Page 3 should go to Page 2
+      goToPage2();
+    });
+
+    // Page 3 carousel: 4 premium message cards (auto-slide + controls)
+    (function setupWishCarousel() {
+      const carousel = document.getElementById('wish-carousel');
+      if (!carousel) return;
+
+      const cards = Array.from(carousel.querySelectorAll('.carousel-card'));
+      const dots = Array.from(carousel.querySelectorAll('.dot'));
+      const btnPrev = document.getElementById('btn-prev-msg');
+      const btnNext = document.getElementById('btn-next-msg');
+
+      if (cards.length === 0) return;
+
+      let current = 0;
+      let timer = null;
+
+      function showSlide(index) {
+        cards.forEach(c => c.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+
+        current = (index + cards.length) % cards.length;
+
+        cards[current]?.classList.add('active');
+        dots[current]?.classList.add('active');
+      }
+
+      function nextSlide() {
+        showSlide(current + 1);
+      }
+
+      function prevSlide() {
+        showSlide(current - 1);
+      }
+
+      function stopAuto() {
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      btnPrev?.addEventListener('click', () => {
+        prevSlide();
+        startAuto();
+      });
+
+      btnNext?.addEventListener('click', () => {
+        nextSlide();
+        startAuto();
+      });
+
+      // Pause auto when tab is not visible
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stopAuto();
+        else startAuto();
+      });
+
+      // Default slide + start auto
+      showSlide(0);
+      startAuto();
+    })();
+  </script>
+</body>
+</html>
