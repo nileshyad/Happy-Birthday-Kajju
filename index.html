@@ -525,6 +525,36 @@
       filter: brightness(1.02);
     }
 
+    /* Blink guidance for Page 3 prev/next buttons.
+       We add/remove classes from JS so last/first slide stops blinking. */
+    #page-msg .carousel-btn{
+      position: relative;
+    }
+
+    #page-msg .carousel-btn.is-blink-prev{
+      animation: btnBlinkPrev 1.2s ease-in-out infinite;
+    }
+
+    #page-msg .carousel-btn.is-blink-next{
+      animation: btnBlinkNext 0.95s ease-in-out infinite;
+    }
+
+    @keyframes btnBlinkPrev {
+      0%, 100% { box-shadow: 0 0 0 rgba(255,75,110,0); transform: scale(1); }
+      50% { box-shadow: 0 0 18px rgba(255,75,110,0.30); transform: scale(1.02); }
+    }
+
+    /* Stronger + slight right shift so user knows “go next” */
+    @keyframes btnBlinkNext {
+      0%, 100% { box-shadow: 0 0 0 rgba(255,75,110,0); transform: translateX(0) scale(1); }
+      45% { box-shadow: 0 0 26px rgba(255,75,110,0.55); transform: translateX(3px) scale(1.05); }
+    }
+
+    /* Pause blinking on hover */
+    #page-msg .carousel-btn:hover{
+      animation-play-state: paused;
+    }
+
     #page-msg .carousel-dots {
       margin-top: 14px;
       display: flex;
@@ -559,6 +589,7 @@
       .emoji { animation: none; }
       .page { animation: none; }
       #page-msg .carousel-card { animation: none; }
+      #page-msg .carousel-btn { animation: none; }
     }
   </style>
 </head>
@@ -567,20 +598,11 @@
   <div class="card" aria-live="polite">
     <!-- Page 1 -->
     <section id="page-home" class="page active">
-      <div class="balloon-layer" aria-hidden="true">
-        <span class="balloon" style="left:8%; --x:-20px; --drift:26px; --dur:5.2s; --c:#ff4d6d;"></span>
-        <span class="balloon" style="left:18%; --x:0px; --drift:40px; --dur:6.0s; --c:#6a11cb;"></span>
-        <span class="balloon" style="left:34%; --x:-10px; --drift:30px; --dur:5.6s; --c:#2575fc;"></span>
-        <span class="balloon" style="left:52%; --x:0px; --drift:36px; --dur:6.4s; --c:#11998e;"></span>
-        <span class="balloon" style="left:66%; --x:-5px; --drift:28px; --dur:5.8s; --c:#ee0979;"></span>
-        <span class="balloon" style="left:80%; --x:6px; --drift:20px; --dur:6.2s; --c:#ff6a00;"></span>
-      </div>
-
-      <div class="emoji">🎉🎂🎈</div>
-      <h1>Happy Birthday Kajju!</h1>
+   <div class="emoji">🎉🎂🎈</div>
+      <h1><i>Happy Birthday Kajju!</i></h1>
       <p class="subtle">
-        Wishing you a day filled with happiness, laughter, and unforgettable moments.
-        May all your dreams come true and the year ahead bring you endless joy!
+       <i> Wishing you a day filled with happiness, laughter, and unforgettable moments.
+        May all your dreams come true and the year ahead bring you endless joy!</i>
       </p>
 
       <div class="actions">
@@ -591,10 +613,10 @@
     <!-- Page 2 -->
     <section id="page-surprise" class="page">
       <div class="emoji">✨🎁✨</div>
-      <h1>Best Wishes!</h1>
+      <h1><i>Best Wishes!<i></h1>
       <p class="subtle" id="surprise-message">
-        You made it to another amazing year. Keep shining and have the best day ever! 🥳
-        Kajju Click on the play button below to enjoy your birthday surprise with music and a special effect!
+        <i>You made it to another amazing year. Keep shining and have the best day ever! 🥳<br>
+        Kajju Click on the play button below to enjoy your birthday surprise with music and a special effect!</i></br>
       </p>
 
       <div class="surprise-image photo-liquid-off" role="img" aria-label="Birthday celebration picture">
@@ -626,7 +648,7 @@
     <!-- Page 3 -->
     <section id="page-msg" class="page">
       <div class="emoji">💖✨</div>
-      <h1>Birthday Wishes!</h1>
+      <h1><i>Birthday Wishes!</i></h1>
 
       <div class="carousel" id="wish-carousel">
         <!-- Card 1 -->
@@ -638,7 +660,7 @@
             alt="Birthday photo"
           />
 
-          <h2 class="carousel-title">🎉 Happy Birthday Mera Chota kajju❤️</h2>
+          <h2 class="carousel-title"><i>🎉 Happy Birthday Mera Chota kajju❤️</i></h2>
           
           <div class="carousel-footer">1 / 5</div>
         </div>
@@ -653,7 +675,7 @@
             alt="Birthday photo"
           />
 
-          <h2 class="carousel-title">🌸 First Meeting</h2>
+          <h2 class="carousel-title"><i>🌸 First Meeting</i></h2>
           <p class="carousel-text">
             I don’t know if you realize this, but the day I first saw you became one of the most special memories of my life. I kept looking for excuses to start a conversation with you, but I never had the courage. I’m grateful that one day you took the first step and talked to me.
           </p>
@@ -670,7 +692,7 @@
             alt="Birthday photo"
           />
 
-          <h2 class="carousel-title">😊 Beautiful Moments</h2>
+          <h2 class="carousel-title"><i>😊 Beautiful Moments</i></h2>
           <p class="carousel-text">
             we spent so much time together—texting, calling, laughing, and sharing little moments that meant more to me than you probably know. I even remember the times we hugged, and those moments made me feel happy, comfortable, and incredibly lucky to have you in my life.
           </p>
@@ -687,7 +709,7 @@
             alt="Birthday photo"
           />
 
-          <h2 class="carousel-title">❤️ From My Heart</h2>
+          <h2 class="carousel-title"><i>❤️ From My Heart</i></h2>
           <p class="carousel-text">
             And just so you know, even if life changes you, even if you gain weight or look different over time, you’ll always be the same beautiful girl to me. What made you special was never just your appearance—it was your smile, your personality, and the way you made ordinary moments feel unforgettable. 🎂
           </p>
@@ -704,7 +726,7 @@
             alt="Birthday photo"
           />
 
-          <h2 class="carousel-title">🌟 Always Shining</h2>
+          <h2 class="carousel-title"><i>🌟 Always Shining</i></h2>
           <p class="carousel-text">
             Even though we’re not as close as we used to be, I genuinely wish you nothing but happiness, success, good health, and peace. I hope this birthday brings you everything you’ve been hoping for and that life always gives you reasons to smile. 💖
           </p>
@@ -957,6 +979,15 @@
 
         cards[current]?.classList.add('active');
         dots[current]?.classList.add('active');
+
+        // Stop blinking at ends:
+        // - Next should stop on last slide
+        // - Prev should stop on first slide
+        const isFirst = current === 0;
+        const isLast = current === cards.length - 1;
+
+        btnPrev?.classList.toggle('is-blink-prev', !isFirst);
+        btnNext?.classList.toggle('is-blink-next', !isLast);
       }
 
       function nextSlide() {
